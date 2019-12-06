@@ -23,7 +23,13 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
+import java.util.Date;
+
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
 /**
  * This class defines a simple embedded SQL utility class that is designed to
  * work with PostgreSQL JDBC drivers.
@@ -255,21 +261,22 @@ public class DBProject {
    }//end readChoice
 
    
-   public static void addCustomer(DBProject esql){
+  public static void addCustomer(DBProject esql){
     // Given customer details add the customer in the DB 
 
-           /* customerID Numeric
+
+      /* customerID Numeric
              fName CHAR(30) NOT NULL,
              lName CHAR(30) NOT NULL,
              Address TEXT,
              phNo Numeric,
              DOB Date,
              gender GenderType,*/
-      int customerID; // Assumign customerId will only be integers based on the given CSV file
-      String fname,lname;
-      Text addr;
-      DateTimeFormatter dob = DateTimeFormatter.ofPattern("MM / dd / yyyy");
-      GenderType gender;
+
+      int customerID; // Assuming customerId will only be integers based on the given CSV file
+      String fname,lname, addr, dob, gender;
+      double phNo; // to allow for numbers up to 999-999-9999
+      
       //customerID
       do{
           System.out.print("Enter Customer ID: ");
@@ -282,14 +289,14 @@ public class DBProject {
               continue;
           }
       }while(true);
-      // fname,last name
+
+      // fname
       do{
-          System.out.print("Enter Customer first and last name: ");
+          System.out.print("Enter Customer first name: ");
           try{ 
             fname = in.readLine();
-            lname = in.readLine();
-            if ( (fname.length() <= 0 || fname.length() > 30) || (lname.length() <= 0 || lname.length() > 30) ) {
-              throw new RuntimeException("Invalid input. Customer's name can't be empty, negative, or excheed 30 characters.")
+            if ( (fname.length() <= 0 || fname.length() > 30) ) {
+              throw new RuntimeException("Invalid input. Customer's first  name can't be empty, negative, or excheed 30 characters.");
             }
             break;
           }
@@ -298,9 +305,26 @@ public class DBProject {
               continue;
           }
       }while(true);
+
+      // lname
+      do{
+          System.out.print("Enter Customer last name: ");
+          try{ 
+            lname = in.readLine();
+            if ((lname.length() <= 0 || lname.length() > 30) ) {
+              throw new RuntimeException("Invalid input. Customer's last name can't be empty, negative, or excheed 30 characters.");
+            }
+            break;
+          }
+          catch(Exception e){
+              System.out.print("Input is invalid. " + e.getMessage());
+              continue;
+          }
+      }while(true);
+
       //address
       do{
-          System.out.print("Enter Customer's Address ");
+          System.out.print("Enter Customer's Address: ");
           try{
             addr = in.readLine();
             break;
@@ -310,12 +334,30 @@ public class DBProject {
               continue;
           }
       }while(true);
+
+       //phNo
+      do{
+          System.out.print("Enter Customer Phone Number: ");
+          try{
+              phNo = Integer.parseInt(in.readLine());
+              break;
+          }
+          catch(Exception e){
+              System.out.print("Input is invalid. " + e.getMessage());
+              continue;
+          }
+      }while(true);
+
       // dob
       do{
-        System.out.print("Enter Customers DOB ");
+        System.out.print("Enter Customers DOB (MM/DD/YYYY): ");
         try{
-          date = in.readLine();
-          LocalDate local = LocalDate.parse(date,dob);
+          dob = in.readLine();
+          if(dob.length() < 0 || dob.length() > 10){
+            throw new RuntimeException("Invalid DOB. DOB can't be that value, please enter up to 10 values including '/'' ");
+          }
+         /* month = dob.substring(0,2);
+          if(month.indexOf())*/
           break;
         }
         catch(Exception e){
@@ -326,11 +368,12 @@ public class DBProject {
 
       //gender
       do{
-        System.out.print("Enter Customer's gender ");
+        System.out.print("Enter Customer's gender: ");
         try{
-          //if("Male" || "Female" || "Other"){
           gender = in.readLine();
-          
+          if (!(gender.equals("Male") || gender.equals("Female") || gender.equals("Other"))){
+              throw new RuntimeException("Invalid input. Customer's gender can only be Male, Female, Other.");
+          }
           break;
       }
       catch(Exception e){
@@ -340,37 +383,249 @@ public class DBProject {
       }while(true);
 
       try{
-        String query = "INSERT INTO "
+        String query = "INSERT INTO Customer(customerID, fname, lName, Address, phNo, DOB, gender) VALUES (" + customerID + ", \'"  + fname + "\', \'"  + lname + "\', \'" + addr + "\', \'" + phNo + "\', \'" + dob + "\', \'" + gender + "\' );";
+        esql.executeUpdate(query);
+      }
+      catch(Exception e){
+        System.err.print("Query failed: " + e.getMessage());
       }
 
-
-   }//end addCustomer
+   }//end addCustomer*/
 
    public static void addRoom(DBProject esql){
     // Given room details add the room in the DB
-      // Your code goes here.
-      // ...
-      // ...
+      /*
+        hotelID Numeric NOT NULL,
+        roomNo  Numeric NOT NULL,
+        roomType CHAR(10) NOT NULL,*/
+      
    }//end addRoom
 
    public static void addMaintenanceCompany(DBProject esql){
       // Given maintenance Company details add the maintenance company in the DB
-      // ...
-      // ...
+      
+       /* cmpID Numeric NOT NULL,
+        name CHAR(30) NOT NULL,
+        address TEXT,
+        isCertified Boolean NOT NULL*/
+
+        int cmpID;
+        String name;
+        String addr;
+       Boolean isCertified;
+
+        //cmpID
+         do{
+          System.out.print("Enter Maintenance Company ID: ");
+          try{
+              cmpID = Integer.parseInt(in.readLine());
+              break;
+          }
+          catch(Exception e){
+              System.out.print("Input is invalid. " + e.getMessage());
+              continue;
+          }
+      }while(true);
+        //name
+         do{
+          System.out.print("Enter Maintenance Company name: ");
+          try{ 
+            name = in.readLine();
+            if ( name.length() <= 0 || name.length() > 30) {
+              throw new RuntimeException("Invalid input. Maintenance Company name can't be empty, negative, or exceed 30 characters.");
+            }
+            break;
+          }
+          catch(Exception e){
+              System.out.print("Input is invalid. " + e.getMessage());
+              continue;
+          }
+      }while(true);
+      //address
+      do{
+          System.out.print("Enter Maintenance Company Address: ");
+          try{
+            addr = in.readLine();
+            break;
+          }
+          catch(Exception e){
+              System.out.print("Input is invalid. " + e.getMessage());
+              continue;
+          }
+      }while(true);
+      //isCertified
+
+      do{
+        System.out.print("Enter Maintenance Company certification value: ");
+        try{
+          String cert;
+          cert = in.readLine();
+          if(cert.equals("TRUE")){
+            isCertified = true;
+          }else if (cert.equals("FALSE")){
+            isCertified = false;
+          }else{
+            throw new RuntimeException("Invalid input.");
+          }
+          break;
+        }
+        catch(Exception e){
+              System.out.print("Input is invalid. " + e.getMessage());
+              continue;
+          }
+      }while(true);
+       try{
+        String query = "INSERT INTO MaintenanceCompany(cmpID, name, address, isCertified) VALUES (" + cmpID + ", \'" + name + "\', \'" + addr + "\',\'" + isCertified + "\' );";
+        //String query = "INSERT INTO MaintenanceCompany(cmpID, name, address, isCertified) VALUES (" + cmpID + "," + name + "," + addr + "," + isCertified +);";
+         esql.executeUpdate(query);
+      }
+      catch(Exception e){
+        System.err.print("Query failed: " + e.getMessage());
+      }
+
    }//end addMaintenanceCompany
 
    public static void addRepair(DBProject esql){
     // Given repair details add repair in the DB
-      // Your code goes here.
-      // ...
-      // ...
+    /*
+      rID Numeric NOT NULL,
+      hotelID Numeric NOT NULL DEFAULT 0,
+      roomNo Numeric NOT NULL DEFAULT 0,
+      mCompany Numeric NOT NULL DEFAULT 0,
+      repairDate Date NOT NULL,
+      description TEXT,
+      repairType CHAR(10),
+    */
+      
    }//end addRepair
 
    public static void bookRoom(DBProject esql){
     // Given hotelID, roomNo and customer Name create a booking in the DB 
-      // Your code goes here.
-      // ...
-      // ...
+      /*
+      bID Numeric NOT NULL,
+      customer Numeric NOT NULL DEFAULT 0,
+      hotelID Numeric NOT NULL DEFAULT 0,
+      roomNo Numeric NOT NULL DEFAULT 0,
+      bookingDate Date NOT NULL,
+      noOfPeople Numeric,
+      price Numeric(6,2) NOT NULL,
+      */
+      int bID, customer, hotelID, roomNo, noOfPeople;
+      double price;
+      String bookingDate;
+
+       //bID
+         do{
+          System.out.print("Enter Booking ID: ");
+          try{
+              bID = Integer.parseInt(in.readLine());
+              break;
+          }
+          catch(Exception e){
+              System.out.print("Input is invalid. " + e.getMessage());
+              continue;
+          }
+      }while(true);
+      
+       //customer
+         do{
+          System.out.print("Enter Booking customer: ");
+          try{
+              customer = Integer.parseInt(in.readLine());
+              break;
+          }
+          catch(Exception e){
+              System.out.print("Input is invalid. " + e.getMessage());
+              continue;
+          }
+      }while(true);
+
+
+       //hotelID
+         do{
+          System.out.print("Enter Booking hotel ID: ");
+          try{
+              hotelID = Integer.parseInt(in.readLine());
+              break;
+          }
+          catch(Exception e){
+              System.out.print("Input is invalid. " + e.getMessage());
+              continue;
+          }
+      }while(true);
+
+
+      //roomNo
+         do{
+          System.out.print("Enter Booking roomNo: ");
+          try{
+              roomNo = Integer.parseInt(in.readLine());
+              break;
+          }
+          catch(Exception e){
+              System.out.print("Input is invalid. " + e.getMessage());
+              continue;
+          }
+      }while(true);
+
+      //bookingDate
+      do{
+          System.out.print("Enter Booking date (MM/DD/YYYY: ");
+          try{
+            //SimpleDateFormat sdf = new SimpleDateFormat("MM/DD/YYYY");
+            bookingDate = in.readLine();
+
+            if(bookingDate.length() < 0 || bookingDate.length() > 10){
+              throw new RuntimeException("Invalid booking date. Booking date can't be that value, please enter up to 10 values including '/'' ");
+            }
+            break;
+          }
+          catch(Exception e){
+              System.out.print("Input is invalid. " + e.getMessage());
+              continue;
+          }
+      }while(true);
+
+
+       //noOfPeople
+         do{
+          System.out.print("Enter Booking number of people: ");
+          try{
+              noOfPeople = Integer.parseInt(in.readLine());
+              break;
+          }
+          catch(Exception e){
+              System.out.print("Input is invalid. " + e.getMessage());
+              continue;
+          }
+      }while(true);
+
+
+       //price
+         do{
+          System.out.print("Enter Booking price: ");
+          try{
+              price= Integer.parseInt(in.readLine());
+              if(price < 0 || price > 999999.99){
+                  throw new RuntimeException("Invalid price. Price can't be negative or greater than 999999.99");
+              }
+              break;
+          }
+          catch(Exception e){
+              System.out.print("Input is invalid. " + e.getMessage());
+              continue;
+          }
+      }while(true);
+
+      try{
+        String query = "INSERT INTO Booking(bID, hotelID, roomNo, bookingDate, noOfPeople, price) VALUES (" + bID+ ", \'" + hotelID + "\', \'" + roomNo + "\',\'" + bookingDate + "\',\'"  + noOfPeople + "\', \'" + price + "\');";
+        //String query = "INSERT INTO MaintenanceCompany(cmpID, name, address, isCertified) VALUES (" + cmpID + "," + name + "," + addr + "," + isCertified +);";
+         esql.executeUpdate(query);
+      }
+      catch(Exception e){
+        System.err.print("Query failed: " + e.getMessage());
+      }
+
    }//end bookRoom
 
    public static void assignHouseCleaningToRoom(DBProject esql){
@@ -380,11 +635,94 @@ public class DBProject {
       // ...
    }//end assignHouseCleaningToRoom
    
-   public static void repairRequest(DBProject esql){
+   public static void repairRequest(DBProject esql){ 
     // Given a hotelID, Staff SSN, roomNo, repairID , date create a repair request in the DB
-      // Your code goes here.
-      // ...
-      // ...
+      
+      //int hotelID, SSN, roomNo,rID;
+      //String repairDate;
+      
+      int reqID,managerID, repairID;
+      String requestDate, description;
+
+      //reqID
+       do{
+          System.out.print("Enter Request ID: ");
+          try{
+              reqID = Integer.parseInt(in.readLine());
+              break;
+          }
+          catch(Exception e){
+              System.out.print("Input is invalid. " + e.getMessage());
+              continue;
+          }
+      }while(true);
+
+
+      //managerID
+       do{
+          System.out.print("Enter Manager ID: ");
+          try{
+              managerID= Integer.parseInt(in.readLine());
+              break;
+          }
+          catch(Exception e){
+              System.out.print("Input is invalid. " + e.getMessage());
+              continue;
+          }
+      }while(true);
+
+
+      //repairID
+       do{
+          System.out.print("Enter Request repair ID: ");
+          try{
+              repairID = Integer.parseInt(in.readLine());
+              break;
+          }
+          catch(Exception e){
+              System.out.print("Input is invalid. " + e.getMessage());
+              continue;
+          }
+      }while(true);
+
+      //requestDate
+       do{
+          System.out.print("Enter Request Date(MM/DD/YYYY): ");
+          try{
+              requestDate = in.readLine();
+              if(requestDate.length() < 0 || requestDate.length() > 10){
+              throw new RuntimeException("Invalid request date. Request date can't be that value, please enter up to 10 values including '/'' ");
+            }
+            break;
+          }
+          catch(Exception e){
+              System.out.print("Input is invalid. " + e.getMessage());
+              continue;
+          }
+      }while(true);
+
+      
+      //description
+      do{
+          System.out.print("Enter Request description: ");
+          try{
+            description = in.readLine();
+            break;
+          }
+          catch(Exception e){
+              System.out.print("Input is invalid. " + e.getMessage());
+              continue;
+          }
+      }while(true);
+
+      try{
+        String query = "INSERT INTO Request(reqID, managerID, repairID, requestDate, description) VALUES (" + reqID+ ", \'" + managerID + "\', \'" + repairID + "\',\'" + requestDate + "\',\'"  + description + "\');";
+         esql.executeUpdate(query);
+      }
+      catch(Exception e){
+        System.err.print("Query failed: " + e.getMessage());
+      }
+
    }//end repairRequest
    
    public static void numberOfAvailableRooms(DBProject esql){
@@ -393,12 +731,35 @@ public class DBProject {
       // ...
       // ...
    }//end numberOfAvailableRooms
+
    
-   public static void numberOfBookedRooms(DBProject esql){
+  public static void numberOfBookedRooms(DBProject esql){ // THIS ONE
     // Given a hotelID, get the count of rooms booked
-      // Your code goes here.
-      // ...
-      // ...
+      int hotelID;
+      String date; 
+      //hotelID
+         do{
+          System.out.print("Enter hotel ID: ");
+          try{
+              hotelID = Integer.parseInt(in.readLine());
+              break;
+          }
+          catch(Exception e){
+              System.out.print("Input is invalid. " + e.getMessage());
+              continue;
+          }
+      }while(true);
+
+      try{
+        //String query = "SELECT FROM *;";
+        //String query = "INSERT INTO MaintenanceCompany(cmpID, name, address, isCertified) VALUES (" + cmpID + "," + name + "," + addr + "," + isCertified +);";
+         esql.executeUpdate(query);
+      }
+      catch(Exception e){
+        System.err.print("Query failed: " + e.getMessage());
+      }
+      
+
    }//end numberOfBookedRooms
    
    public static void listHotelRoomBookingsForAWeek(DBProject esql){
@@ -408,8 +769,8 @@ public class DBProject {
       // ...
    }//end listHotelRoomBookingsForAWeek
    
-   public static void topKHighestRoomPriceForADateRange(DBProject esql){
-    // List Top K Rooms with the highest price for a given date range
+   public static void topKHighestRoomPriceForADateRange(DBProject esql){ // THIS ONE 
+    // List Top K Rooms with the highest price for a given date range 
       // Your code goes here.
       // ...
       // ...
@@ -422,7 +783,7 @@ public class DBProject {
       // ...
    }//end topKHighestPriceBookingsForACustomer
    
-   public static void totalCostForCustomer(DBProject esql){
+   public static void totalCostForCustomer(DBProject esql){  // THIS ONE
     // Given a hotelID, customer Name and date range get the total cost incurred by the customer
       // Your code goes here.
       // ...
@@ -436,7 +797,7 @@ public class DBProject {
       // ...
    }//end listRepairsMade
    
-   public static void topKMaintenanceCompany(DBProject esql){
+   public static void topKMaintenanceCompany(DBProject esql){ // THIS ONE 
     // List Top K Maintenance Company Names based on total repair count (descending order)
       // Your code goes here.
       // ...
