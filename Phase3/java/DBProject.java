@@ -946,7 +946,7 @@ public class DBProject {
          }
       }while(true);
       try{
-         String query = "SELECT COUNT(*) FROM Room r WHERE r.hotelID='" + hotelID + "' AND r.roomNo IN (SELECT b.roomNo FROM Booking b)";
+         String query = "SELECT COUNT(*) FROM Room r WHERE r.hotelID='" + hotelID + "' AND r.roomNo NOT IN (SELECT b.roomNo FROM Booking b WHERE b.hotelID = '" + hotelID + "');";
          esql.executeQuery(query);
       }
       catch(Exception e){
